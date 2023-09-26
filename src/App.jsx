@@ -6,6 +6,7 @@ import { FormularioTareas } from "./components/FormularioTareas/FormularioTareas
 import { CardTarea } from "./components/TareaAnotadas/CardTarea";
 import { Header } from "./components/header/Header";
 import { tareaReducer } from "./reducers/TareaReducer";
+import Swal from "sweetalert2";
 // todo lo que empiece con use es un hook
 // otra manera de exportar
 export const App = () => {
@@ -38,6 +39,19 @@ export const App = () => {
             payload: tareaNueva
         }
         dispatch(action)
+        Swal.fire({
+            title: 'Tarea Agregada exitosamente!',
+            width: 600,
+            padding: '3em',
+            color: '#716add',
+            background: '#fff url(/images/trees.png)',
+            backdrop: `
+              rgba(0,0,123,0.4)
+              url("/images/nyan-cat.gif")
+              left top
+              no-repeat
+            `
+          })
         setDescripcion("")
     }
 
@@ -48,10 +62,29 @@ export const App = () => {
         })
      }
      const handleEliminar = (id) => {
-        dispatch({
-            type: "borrar",
-            payload: id
-        })
+        Swal.fire({
+            title: 'Estas segur@ que quieres eliminar la Tarea?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              Swal.fire(
+                'Eliminada Existosamente!',
+                'Your file has been deleted.',
+                'success'
+              )
+              dispatch({
+                type: "borrar",
+                payload: id
+            })
+            } else if(result.isDenied) {
+
+            }
+          })
      }
      let terminadas = 0;
      for (let i = 0; i < state.length; i++) {
@@ -60,7 +93,11 @@ export const App = () => {
         }
      }
 
-    let porcentaje = terminadas / state.length;
+     let porcentaje = 0;
+     if (state.length>0) {
+        porcentaje = terminadas / state.length;
+     }
+
     // const tareas =["estudiar React", "hacer tareas", "comer", "hacer ejercicio", "tomar agua"]
     return (
         <>
